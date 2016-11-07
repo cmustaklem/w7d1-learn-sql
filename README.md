@@ -10,13 +10,14 @@ count (*)
 What are the 5 most expensive items?
 select * from items order by price desc limit 5;
 response:
-id|title|category|description|price
-25|Small Cotton Gloves|Automotive, Shoes & Beauty|Multi-layered modular service-desk|9984
-83|Small Wooden Computer|Health|Re-engineered fault-tolerant adapter|9859
-100|Awesome Granite Pants|Toys & Books|Upgradable 24/7 access|9790
-40|Sleek Wooden Hat|Music & Baby|Quality-focused heuristic info-mediaries|9390
-60|Ergonomic Steel Car|Books & Outdoors|Enterprise-wide secondary firmware|9341
-sqlite>
+id          title                category                    description                         price     
+----------  -------------------  --------------------------  ----------------------------------  ----------
+25          Small Cotton Gloves  Automotive, Shoes & Beauty  Multi-layered modular service-desk  9984      
+83          Small Wooden Comput  Health                      Re-engineered fault-tolerant adapt  9859      
+100         Awesome Granite Pan  Toys & Books                Upgradable 24/7 access              9790      
+40          Sleek Wooden Hat     Music & Baby                Quality-focused heuristic info-med  9390      
+60          Ergonomic Steel Car  Books & Outdoors            Enterprise-wide secondary firmware  9341
+
 
 What's the cheapest book? (Does that change for "category is exactly 'book'" versus "category contains 'book'"?)
 
@@ -24,7 +25,9 @@ select * from items where category="Books" order by price asc limit 1;
 
 repsonse:
 
-76|Ergonomic Granite Chair|Books|De-engineered bi-directional portal|1496
+id          title                    category    description                          price     
+----------  -----------------------  ----------  -----------------------------------  ----------
+76          Ergonomic Granite Chair  Books       De-engineered bi-directional portal  1496
 
 
 Who lives at "6439 Zetta Hills, Willmouth, WY"? Do they have another address?
@@ -51,31 +54,44 @@ id|user_id|street|city|state|zip
 41|39|12263 Jake Crossing|Roxanehaven|NY|34705
 42|39|83221 Mafalda Canyon|Bahringerland|WY|24028
 
-Correct Virginie Mitchell's address to "New York, NY, 10108".
-
 update addresses set city="New York", state="NY", zip="10108" where user_id=39;
 sqlite> select * from addresses where user_id=39;
 id|user_id|street|city|state|zip
 41|39|12263 Jake Crossing|New York|NY|10108
 42|39|83221 Mafalda Canyon|New York|NY|10108
 
+//I misunderstood the question. I thought that we would need to updated both questions. I thought that were were going to update both addresses. I see now that we would only need to update one of the addresses.
+
+For this, the query is...
+
+UPDATE addresses SET city = "New York", state= "NY", zip=10108 WHERE id = 41;
+
+select * from addresses where id=41;
+id          user_id     street               city        state       zip       
+----------  ----------  -------------------  ----------  ----------  ----------
+41          39          12263 Jake Crossing  New York    NY          10108
+
 How much would it cost to buy one of each tool?
 
-SELECT AVG(price) FROM items;
-AVG(price)
-4674.88
+select sum(price) from items where category like '%Tools%';
+sum(price)
+46477
 
 How many total items did we sell?
 
-select sum(quantity) from orders;
-sum(quantity)
-2129
+select count(*) from orders;
+count(*)  
+----------
+378
+
+//there are 378 orders because I ran this after creating that new order.
 
 How much was spent on books?
 
-select SUM(items.price) from items inner join orders on items.id=orders.item_id where items.category="Books";
+select SUM(items.price) from items inner join orders on items.id=orders.item_id where items.category like "%Books%";
 SUM(items.price)
-68982
+----------------
+180356 
 
 Simulate buying an item by inserting a User for yourself and an Order for that User.
 
