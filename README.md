@@ -1,11 +1,11 @@
 How many users are there?
 
-select * from users;
+select count(*) from users;
 
 response:
 
-count (*)
-50
+
+51 (this should be 50, but I have done a lot of work on this file)
 
 What are the 5 most expensive items?
 select * from items order by price desc limit 5;
@@ -30,14 +30,23 @@ id          title                    category    description                    
 76          Ergonomic Granite Chair  Books       De-engineered bi-directional portal  1496
 
 
+select * from items where category like "%Books%" order by price asc limit 1;
+
+response:
+
+76	Ergonomic Granite Chair	Books	De-engineered bi-directional portal	1496
+
+There is no difference
+
+
 Who lives at "6439 Zetta Hills, Willmouth, WY"? Do they have another address?
-select * from users inner join addresses on users.id=addresses.id where addresses.street="6439 Zetta Hills"
+select * from users inner join addresses on users.id=addresses.user_id where addresses.street="6439 Zetta Hills"
 Response:
-43|Kyra|Kilback|demarcus.predovic@grimes.org|43|40|6439 Zetta Hills|Willmouth|WY|15029
+40	Corrine	Little	rubie_kovacek@grimes.net	43	40	6439 Zetta Hills	Willmouth	WY	15029
 
 Do they have another address?
 
-select * from addresses where user_id=43 or id=43;
+select * from addresses where user_id=43;
 id|user_id|street|city|state|zip
 43|40|6439 Zetta Hills|Willmouth|WY|15029
 47|43|405 Zulauf Park|North Pascale|OK|51657
@@ -79,19 +88,18 @@ sum(price)
 
 How many total items did we sell?
 
-select count(*) from orders;
-count(*)  
-----------
-378
+select sum(quantity) from orders;
+
+2129
 
 //there are 378 orders because I ran this after creating that new order.
 
 How much was spent on books?
 
-select SUM(items.price) from items inner join orders on items.id=orders.item_id where items.category like "%Books%";
-SUM(items.price)
-----------------
-180356 
+select SUM(items.price * orders.quantity) from items inner join orders on items.id=orders.item_id where items.category like "%Books%";
+
+1081352
+
 
 Simulate buying an item by inserting a User for yourself and an Order for that User.
 
